@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>MiniFinance - Inicio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2>MiniFinance</h2>
+
+        <nav>
+            <ul>
+                <li><a href="inicio.html">Inicio</a></li>
+                <li><a href="simulador.html">Simulador</a></li>
+            </ul>
+        </nav>
+
+        <hr>
+
+        <section>
+            <h3>Meta</h3>
+            <input type="number" placeholder="Meta">
+            <button>Guardar</button>
+            <p>$0</p>
+        </section>
+    </aside>
+
+    <!-- MAIN -->
+    <main>
+        <header>
+            <h1>Dashboard</h1>
+        </header>
+
+        <!-- Resumen (sin lógica todavía) -->
+        <section>
+            <h2>Resumen</h2>
+            <p>Ingresos: $0</p>
+            <p>Gastos: $0</p>
+            <p>Saldo: $0</p>
+        </section>
+
+        <hr>
+
+        <!-- 🔥 LO IMPORTANTE: DOS COLUMNAS -->
+        <div class="contenedor-movimientos">
+
+            <!-- IZQUIERDA -->
+            <section class="panel">
+                <h2>Agregar movimiento</h2>
+
+                <form onsubmit="agregarMovimiento(); return false;">
+                    
+                    <label>Tipo:</label>
+                    <select id="tipo">
+                        <option value="Ingreso">Ingreso</option>
+                        <option value="Gasto">Gasto</option>
+                    </select>
+
+                    <label>Monto:</label>
+                    <input type="number" id="monto" placeholder="Monto">
+
+                    <button type="submit">Agregar</button>
+                </form>
+            </section>
+
+            <!-- DERECHA -->
+            <section class="panel">
+                <h2>Movimientos recientes</h2>
+                <div id="listaMovimientos"></div>
+            </section>
+
+        </div>
+    </main>
+
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>

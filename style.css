@@ -1,0 +1,31 @@
+body {
+    background:#0c1220;
+    color:white;
+    font-family:Arial;
+}
+.layout {
+    display:flex;
+}
+.sidebar {
+    width:200px;
+    padding:20px;
+    background:#111;
+}
+main {
+    flex:1;
+    padding:20px;
+}
+
+.contenedor-movimientos {
+    display: flex;
+    gap: 20px; /* espacio entre columnas */
+    margin-top: 20px;
+}
+
+/* Cada panel */
+.panel {
+    flex: 1; /* que ocupen mitad y mitad */
+    background: #0f1c2e; /* opcional estilo oscuro */
+    padding: 20px;
+    border-radius: 10px;
+}
