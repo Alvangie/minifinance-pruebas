@@ -14,10 +14,12 @@ const MAPA_COLORES = {
     'Otros': '#2ec4b6'
 };
 
+// ─── CONFIGURACIÓN INICIAL CUANDO SE CARGA EL DOM ───────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     inicializarSistemaTemas();
     configurarValidacionInputs();
     
+    // CONECTOR CLAVE: Escucha el formulario y dispara la actualización
     const formMovimiento = document.getElementById('form-movimiento');
     if (formMovimiento) {
         formMovimiento.addEventListener('submit', (e) => {
@@ -26,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Escucha el formulario para fijar el objetivo de ahorro
     const formMeta = document.getElementById('form-configurar-meta');
     if (formMeta) {
         formMeta.addEventListener('submit', (e) => {
@@ -42,9 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Primera renderización con los datos que hayan quedado en memoria
     actualizarTodaLaInterfaz();
 });
 
+// ─── VALIDACIÓN DE ENTRADAS (DOM FEEDBACK) ──────────────────────────────
 function configurarValidacionInputs() {
     const inputsNumericos = document.querySelectorAll('input[inputmode="numeric"]');
     inputsNumericos.forEach(input => {
@@ -54,6 +59,7 @@ function configurarValidacionInputs() {
     });
 }
 
+// ─── CONTROLADOR DE MOVIMIENTOS CON CATEGORÍA REAL ──────────────────────
 function agregarMovimiento() {
     const inputMonto = document.getElementById("monto");
     const selectTipo = document.getElementById("tipo");
@@ -65,14 +71,16 @@ function agregarMovimiento() {
 
     if (isNaN(monto) || monto <= 0) return;
 
+    // Insertar en la persistencia real
     appState.movimientos.push({ tipo, monto, categoria });
     localStorage.setItem('minifinance_movimientos', JSON.stringify(appState.movimientos));
 
+    // Limpiar input y disparar recálculos en cadena de todos tus módulos
     inputMonto.value = "";
     actualizarTodaLaInterfaz();
 }
 
-// ─── UNA SOLA FUNCIÓN CONTROLADORA REAL (SIN DUPLICADOS) ────────────────
+// ─── ORQUESTADOR: RECORRE Y RECALCULA TODO EN CADENA ───────────────────
 function actualizarTodaLaInterfaz() {
     let ingresos = 0;
     let gastos = 0;
@@ -90,6 +98,7 @@ function actualizarTodaLaInterfaz() {
             acumuladoCategorias[catReal] = (acumuladoCategorias[catReal] || 0) + m.monto;
         }
 
+        // Renderizar en el historial semántico nativo (li) sin usar divs
         if (listaUI) {
             const li = document.createElement('li');
             li.className = "break-monto";
@@ -101,16 +110,19 @@ function actualizarTodaLaInterfaz() {
         }
     });
 
+    // Actualizar el Resumen de Saldos
     if(document.getElementById('resumen-ingresos')) {
         document.getElementById('resumen-ingresos').textContent = `$${ingresos.toLocaleString('es-AR')}`;
         document.getElementById('resumen-gastos').textContent = `$${gastos.toLocaleString('es-AR')}`;
         document.getElementById('resumen-saldo').textContent = `$${(ingresos - gastos).toLocaleString('es-AR')}`;
     }
 
+    // Disparar las vistas de tus componentes
     renderizarModuloMeta(ingresos, gastos);
     renderizarModuloGrafico(gastos, acumuladoCategorias);
 }
 
+// ─── MÓDULO A: META DE AHORRO DINÁMICA ──────────────────────────────────
 function renderizarModuloMeta(ingresos, gastos) {
     const ahorroReal = ingresos - gastos;
     const objetivo = appState.montoMeta;
@@ -126,6 +138,7 @@ function renderizarModuloMeta(ingresos, gastos) {
     const faltante = objetivo - ahorroReal;
     document.getElementById('txt-meta-restante').textContent = `$${Math.max(0, faltante).toLocaleString('es-AR')}`;
 
+    // Alertas visuales del desafío obligatorio por comportamiento
     const tarjeta = document.getElementById('tarjeta-meta-ahorro');
     if (tarjeta && objetivo > 0) {
         if (porcentaje >= 100) {
@@ -140,6 +153,7 @@ function renderizarModuloMeta(ingresos, gastos) {
     }
 }
 
+// ─── MÓDULO B: SISTEMA DE TEMAS FLUIDO ──────────────────────────────────
 function inicializarSistemaTemas() {
     const switchTema = document.getElementById('input-switch-tema');
     if (!switchTema) return;
@@ -155,6 +169,7 @@ function inicializarSistemaTemas() {
     });
 }
 
+// ─── MÓDULO C: GRÁFICO DINÁMICO DE DONA (CONIC-GRADIENT) ────────────────
 function renderizarModuloGrafico(totalGastos, categorias) {
     const dona = document.querySelector('.wrapper-dona-grafica');
     const leyenda = document.getElementById('leyenda-dinamica-gastos');
