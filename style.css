@@ -163,3 +163,52 @@ body {
     gap: 5px;
     font-size: 14px;
 }
+
+/* AJUSTES ADICIONALES PARA COMPONENTES DINÁMICOS */
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+.dashboard-main {
+    flex: 1;
+    padding: 20px;
+}
+.panel-resumen {
+    background: var(--bg-card);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+.form-meta-input {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 15px;
+}
+.form-meta-input label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+.form-meta-input input {
+    background: var(--bg-primary);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+.btn-meta-fijar {
+    background: var(--color-exito);
+    color: #ffffff;
+    border: none;
+    padding: 6px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.lista-movimientos-clean {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}

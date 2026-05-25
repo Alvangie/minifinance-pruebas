@@ -1,106 +1,11 @@
-function agregarMovimiento() {
-    let monto = document.getElementById("monto").value;
-    let tipo = document.getElementById("tipo").value;
-
-    let lista = document.getElementById("listaMovimientos");
-
-    lista.innerHTML += `<p>${tipo} - $${monto}</p>`;
-}
 // ========================================================
-// 🛠️ MÓDULO A: LÓGICA DE LA META DE AHORRO PREMIUM
+// 📊 ESTADO GLOBAL CENTRALIZADO (PERSISTENCIA CON STORAGE)
 // ========================================================
-const OBJETIVO_VIAJE = 500000;
+let appState = {
+    movimientos: JSON.parse(localStorage.getItem('minifinance_movimientos')) || [],
+    montoMeta: parseFloat(localStorage.getItem('minifinance_monto_meta')) || 0
+};
 
-function calcularYRenderizarMeta() {
-    // 1. Extraer los datos directamente de los elementos <p> que generan tus compañeras
-    const movimientos = document.querySelectorAll('#listaMovimientos p');
-    let ingresos = 0;
-    let gastos = 0;
-
-    movimientos.forEach(p => {
-        const texto = p.textContent; // Formato: "Ingreso - $250000" o "Gasto - $15000"
-        const desglosado = texto.split(' - $');
-        const tipo = desglosado[0].trim().toLowerCase();
-        const monto = parseFloat(desglosado[1]);
-
-        if (!isNaN(monto)) {
-            if (tipo === 'ingreso') ingresos += monto;
-            if (tipo === 'gasto') gastos += monto;
-        }
-    });
-
-    const ahorroReal = ingresos - gastos;
-    let porcentaje = OBJETIVO_VIAJE > 0 ? Math.round((ahorroReal / OBJETIVO_VIAJE) * 100) : 0;
-    porcentaje = Math.max(0, Math.min(porcentaje, 100)); // Clamping seguro entre 0 y 100
-
-    // 2. Inyectar valores calculados en el DOM nativo
-    document.getElementById('barra-progreso-nativa').value = porcentaje;
-    document.getElementById('txt-meta-porcentaje').textContent = `${porcentaje}% completado`;
-    document.getElementById('txt-meta-ahorrado').textContent = `$${Math.max(0, ahorroReal).toLocaleString('es-AR')}`;
-    
-    const faltante = OBJETIVO_VIAJE - ahorroReal;
-    document.getElementById('txt-meta-restante').textContent = `$${Math.max(0, faltante).toLocaleString('es-AR')}`;
-
-    // 3. DESAFÍO OBLIGATORIO: Alerta visual si no alcanza la meta o si la cumple
-    const tarjeta = document.getElementById('tarjeta-meta-ahorro');
-    if (tarjeta) {
-        if (porcentaje >= 100) {
-            tarjeta.style.borderColor = 'var(--color-exito)';
-            tarjeta.style.boxShadow = '0 0 12px rgba(16, 185, 129, 0.3)';
-        } else if (porcentaje < 35 && ahorroReal < gastos) {
-            tarjeta.style.borderColor = 'var(--color-alerta)'; // Alerta por exceso de gastos
-        } else {
-            tarjeta.style.borderColor = 'var(--border-color)';
-            tarjeta.style.boxShadow = 'none';
-        }
-    }
-}
-
-// Interceptar el envío del formulario de las chicas para actualizar tu tarjeta inmediatamente
-document.addEventListener('DOMContentLoaded', () => {
-    calcularYRenderizarMeta();
-    const formOriginal = document.querySelector('form');
-    if (formOriginal) {
-        formOriginal.addEventListener('submit', () => {
-            setTimeout(calcularYRenderizarMeta, 20);
-        });
-    }
-});
-
-// ========================================================
-// 🛠️ MÓDULO B: SISTEMA DE TEMAS DINÁMICOS CON LOCALSTORAGE
-// ========================================================
-function inicializarSistemaTemas() {
-    const switchTema = document.getElementById('input-switch-tema');
-    if (!switchTema) return;
-
-    // Recuperar preferencia guardada o aplicar oscuro por defecto (según diseño de las chicas)
-    const temaGuardado = localStorage.getItem('minifinance-tema') || 'dark';
-    document.documentElement.setAttribute('data-theme', temaGuardado);
-    switchTema.checked = temaGuardado === 'dark';
-    actualizarIndicadorVisualTema(temaGuardado);
-
-    switchTema.addEventListener('change', (e) => {
-        const nuevoTema = e.target.checked ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', nuevoTema);
-        localStorage.setItem('minifinance-tema', nuevoTema); // Guardado obligatorio en storage
-        actualizarIndicadorVisualTema(nuevoTema);
-    });
-}
-
-function actualizarIndicadorVisualTema(tema) {
-    const icono = document.getElementById('icono-estado-tema');
-    if (icono) {
-        icono.textContent = tema === 'dark' ? '☀️' : '🌙';
-    }
-}
-
-// Arrancar el tema inmediatamente al procesar el script para evitar parpadeos
-inicializarSistemaTemas();
-
-// ========================================================
-// 🛠️ MÓDULO C: GRÁFICO DE GASTOS DINÁMICO (CONIC-GRADIENT)
-// ========================================================
 const MAPA_COLORES = {
     'Alimentación': '#ff4d6d',
     'Ocio': '#7209b7',
@@ -109,36 +14,169 @@ const MAPA_COLORES = {
     'Otros': '#2ec4b6'
 };
 
-function calcularYRenderizarGrafico() {
-    const movimientos = document.querySelectorAll('#listaMovimientos p');
-    const leyenda = document.getElementById('leyenda-dinamica-gastos');
-    const dona = document.querySelector('.wrapper-dona-grafica');
+document.addEventListener('DOMContentLoaded', () => {
+    inicializarSistemaTemas();
+    configurarValidacionInputs();
     
-    if (!leyenda || !dona) return;
+    // Escuchar el formulario de movimientos
+    const formMovimiento = document.getElementById('form-movimiento');
+    if (formMovimiento) {
+        formMovimiento.addEventListener('submit', (e) => {
+            e.preventDefault();
+            agregarMovimiento();
+        });
+    }
 
-    let totalGastos = 0;
+    // Escuchar tu nuevo formulario para fijar la meta
+    const formMeta = document.getElementById('form-configurar-meta');
+    if (formMeta) {
+        formMeta.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const inputMeta = document.getElementById('input-monto-meta');
+            const valor = parseFloat(inputMeta.value);
+
+            if (!isNaN(valor) && valor > 0) {
+                appState.montoMeta = valor;
+                localStorage.setItem('minifinance_monto_meta', valor);
+                actualizarTodaLaInterfaz();
+                inputMeta.value = '';
+            }
+        });
+    }
+
+    // Primera renderización con los datos que hayan quedado guardados
+    actualizarTodaLaInterfaz();
+});
+
+// ─── VALIDACIÓN DE ENTRADAS (DOM FEEDBACK) ──────────────────────────────
+function configurarValidacionInputs() {
+    const inputsNumericos = document.querySelectorAll('input[inputmode="numeric"]');
+    inputsNumericos.forEach(input => {
+        // Bloquear letras, signos de exponente y números negativos en tiempo real
+        input.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+    });
+}
+
+// ─── CONTROLADOR DE MOVIMIENTOS REFACTORIZADO ───────────────────────────
+function agregarMovimiento() {
+    const inputMonto = document.getElementById("monto");
+    const selectTipo = document.getElementById("tipo");
+    
+    const monto = parseFloat(inputMonto.value);
+    const tipo = selectTipo.value; // "Ingreso" o "Gasto"
+
+    if (isNaN(monto) || monto <= 0) return;
+
+    // Guardar el movimiento estructurado en el estado global
+    appState.movimientos.push({ tipo, monto });
+    localStorage.setItem('minifinance_movimientos', JSON.stringify(appState.movimientos));
+
+    // Limpiar input y disparar recálculos en cadena de todos tus módulos
+    inputMonto.value = "";
+    actualizarTodaLaInterfaz();
+}
+
+// ─── ORQUESTADOR DE RENDERIZADO VISUAL ──────────────────────────────────
+function actualizarTodaLaInterfaz() {
+    let ingresos = 0;
+    let gastos = 0;
     const acumuladoCategorias = {};
+    const listaUI = document.getElementById("listaMovimientos");
+    
+    if (listaUI) listaUI.innerHTML = "";
 
-    // 1. Recorrer movimientos del DOM y acumular únicamente los Gastos
-    movimientos.forEach(p => {
-        const texto = p.textContent;
-        const desglosado = texto.split(' - $');
-        const tipo = desglosado[0].trim().toLowerCase();
-        const monto = parseFloat(desglosado[1]);
-
-        if (!isNaN(monto) && tipo === 'gasto') {
-            totalGastos += monto;
-
-            // Clasificación automatizada basada en texto para acoplarse al prototipo
+    appState.movimientos.forEach(m => {
+        if (m.tipo === "Ingreso") {
+            ingresos += m.monto;
+        } else {
+            gastos += m.monto;
+            
+            // Simulación semántica de categorías basada en reglas de negocio dinámicas
             let categoria = 'Otros';
-            if (texto.toLowerCase().includes('super') || texto.toLowerCase().includes('comida')) categoria = 'Alimentación';
-            if (texto.toLowerCase().includes('juego') || texto.toLowerCase().includes('ocio') || texto.toLowerCase().includes('video')) categoria = 'Ocio';
-            if (texto.toLowerCase().includes('transporte') || texto.toLowerCase().includes('bondi') || texto.toLowerCase().includes('viaje')) categoria = 'Transporte';
-            if (texto.toLowerCase().includes('luz') || texto.toLowerCase().includes('agua') || texto.toLowerCase().includes('servicios')) categoria = 'Servicios';
+            if (m.monto >= 50000) categoria = 'Servicios';
+            else if (m.monto >= 15000) categoria = 'Alimentación';
+            else if (m.monto >= 5000) categoria = 'Ocio';
+            else if (m.monto > 0) categoria = 'Transporte';
 
-            acumuladoCategorias[categoria] = (acumuladoCategorias[categoria] || 0) + monto;
+            acumuladoCategorias[categoria] = (acumuladoCategorias[categoria] || 0) + m.monto;
+        }
+
+        // Renderizar en la lista usando elementos semánticos nativos (li) sin divs
+        if (listaUI) {
+            const li = document.createElement('li');
+            li.style.padding = '8px';
+            li.style.borderBottom = '1px solid var(--border-color)';
+            li.innerHTML = `<strong>${m.tipo}</strong> — $${m.monto.toLocaleString('es-AR')}`;
+            listaUI.appendChild(li);
         }
     });
+
+    // Actualizar el bloque de Resumen Financiero
+    if(document.getElementById('resumen-ingresos')) {
+        document.getElementById('resumen-ingresos').textContent = `$${ingresos.toLocaleString('es-AR')}`;
+        document.getElementById('resumen-gastos').textContent = `$${gastos.toLocaleString('es-AR')}`;
+        document.getElementById('resumen-saldo').textContent = `$${(ingresos - gastos).toLocaleString('es-AR')}`;
+    }
+
+    // Disparar tus componentes específicos
+    renderizarModuloMeta(ingresos, gastos);
+    renderizarModuloGrafico(gastos, acumuladoCategorias);
+}
+
+// ─── MÓDULO A: META DE AHORRO DINÁMICA ──────────────────────────────────
+function renderizarModuloMeta(ingresos, gastos) {
+    const ahorroReal = ingresos - gastos;
+    const objetivo = appState.montoMeta;
+
+    let porcentaje = objetivo > 0 ? Math.round((ahorroReal / objetivo) * 100) : 0;
+    porcentaje = Math.max(0, Math.min(porcentaje, 100));
+
+    document.getElementById('txt-meta-monto').textContent = `$${objetivo.toLocaleString('es-AR')}`;
+    document.getElementById('barra-progreso-nativa').value = porcentaje;
+    document.getElementById('txt-meta-porcentaje').textContent = `${porcentaje}% completado`;
+    document.getElementById('txt-meta-ahorrado').textContent = `$${Math.max(0, ahorroReal).toLocaleString('es-AR')}`;
+    
+    const faltante = objetivo - ahorroReal;
+    document.getElementById('txt-meta-restante').textContent = `$${Math.max(0, faltante).toLocaleString('es-AR')}`;
+
+    // DESAFÍO OBLIGATORIO: Alertas por comportamiento financiero en el DOM
+    const tarjeta = document.getElementById('tarjeta-meta-ahorro');
+    if (tarjeta && objetivo > 0) {
+        if (porcentaje >= 100) {
+            tarjeta.style.borderColor = 'var(--color-exito)';
+            tarjeta.style.boxShadow = '0 0 12px rgba(16, 185, 129, 0.3)';
+        } else if (porcentaje < 35 && ahorroReal < gastos) {
+            tarjeta.style.borderColor = 'var(--color-alerta)';
+        } else {
+            tarjeta.style.borderColor = 'var(--border-color)';
+            tarjeta.style.boxShadow = 'none';
+        }
+    }
+}
+
+// ─── MÓDULO B: SISTEMA DE TEMAS ─────────────────────────────────────────
+function inicializarSistemaTemas() {
+    const switchTema = document.getElementById('input-switch-tema');
+    if (!switchTema) return;
+
+    const temaGuardado = localStorage.getItem('minifinance-tema') || 'dark';
+    document.documentElement.setAttribute('data-theme', temaGuardado);
+    switchTema.checked = temaGuardado === 'dark';
+
+    switchTema.addEventListener('change', (e) => {
+        const nuevoTema = e.target.checked ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', nuevoTema);
+        localStorage.setItem('minifinance-tema', nuevoTema);
+    });
+}
+
+// ─── MÓDULO C: GRÁFICO CÓNICO PREMIUM ───────────────────────────────────
+function renderizarModuloGrafico(totalGastos, categorias) {
+    const dona = document.querySelector('.wrapper-dona-grafica');
+    const leyenda = document.getElementById('leyenda-dinamica-gastos');
+    if (!dona || !leyenda) return;
 
     document.getElementById('monto-total-grafico').textContent = `$${totalGastos.toLocaleString('es-AR')}`;
     leyenda.innerHTML = '';
@@ -149,19 +187,17 @@ function calcularYRenderizarGrafico() {
         return;
     }
 
-    // 2. Generar los ángulos de color del conic-gradient y rellenar la leyenda semántica
     let anguloAcumulado = 0;
-    const segmentosDegradado = [];
+    const segmentos = [];
 
-    for (const [cat, monto] of Object.entries(acumuladoCategorias)) {
+    for (const [cat, monto] of Object.entries(categorias)) {
         const color = MAPA_COLORES[cat] || MAPA_COLORES['Otros'];
         const porcentaje = (monto / totalGastos) * 100;
         const siguienteAngulo = anguloAcumulado + porcentaje;
 
-        segmentosDegradado.push(`${color} ${anguloAcumulado}% ${siguienteAngulo}%`);
+        segmentos.push(`${color} ${anguloAcumulado}% ${siguienteAngulo}%`);
         anguloAcumulado = siguienteAngulo;
 
-        // Crear item de lista dinámico semántico sin usar divs
         const li = document.createElement('li');
         li.style.borderLeft = `4px solid ${color}`;
         li.style.paddingLeft = '10px';
@@ -170,17 +206,5 @@ function calcularYRenderizarGrafico() {
         leyenda.appendChild(li);
     }
 
-    // Aplicar el estilo al elemento del DOM
-    dona.style.background = `conic-gradient(${segmentosDegradado.join(', ')})`;
+    dona.style.background = `conic-gradient(${segmentos.join(', ')})`;
 }
-
-// Enganchar actualización en tiempo real junto con el módulo A
-document.addEventListener('DOMContentLoaded', () => {
-    calcularYRenderizarGrafico();
-    const formOriginal = document.querySelector('form');
-    if (formOriginal) {
-        formOriginal.addEventListener('submit', () => {
-            setTimeout(calcularYRenderizarGrafico, 20);
-        });
-    }
-});

@@ -7,9 +7,8 @@
 </head>
 <body>
 
-<div class="layout">
+<main class="layout">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
         <h2>MiniFinance</h2>
 
@@ -21,99 +20,98 @@
         </nav>
 
         <hr>
-<section class="panel-meta-premium" id="tarjeta-meta-ahorro" aria-labelledby="meta-titulo">
-    <header class="meta-premium-header">
-        <span class="meta-icono" aria-hidden="true">🎯</span>
-        <h3 id="meta-titulo">Meta de ahorro</h3>
-    </header>
-    
-    <article class="meta-premium-body">
-        <h4 id="txt-meta-nombre">Ahorrar para mi viaje</h4>
-        <p class="monto-destacado-premium" id="txt-meta-monto">$500.000</p>
-        
-        <section class="progreso-wrapper-clean">
-            <progress id="barra-progreso-nativa" value="0" max="100"></progress>
-            <span id="txt-meta-porcentaje">0% completado</span>
-        </section>
-    </article>
-    
-    <footer class="meta-premium-footer">
-        <p>Llevás guardado: <span id="txt-meta-ahorrado">$0</span></p>
-        <p class="texto-secundario">Faltan: <span id="txt-meta-restante">$0</span></p>
-        <button type="button" class="btn-meta-accion" id="btn-ver-metas">Ver metas</button>
-    </footer>
-</section>
 
-<section class="panel-control-tema" aria-label="Selector de tema visual">
-    <label for="input-switch-tema" class="label-tema">
-        <span id="icono-estado-tema">🌙</span> Modo oscuro
-    </label>
-    <input type="checkbox" id="input-switch-tema">
-</section>
+        <section class="panel-meta-premium" id="tarjeta-meta-ahorro" aria-labelledby="meta-titulo">
+            <header class="meta-premium-header">
+                <span class="meta-icono" aria-hidden="true">🎯</span>
+                <h3 id="meta-titulo">Meta de ahorro</h3>
+            </header>
+            
+            <article class="meta-premium-body">
+                <form id="form-configurar-meta" class="form-meta-input">
+                    <label for="input-monto-meta">Configurar objetivo ($):</label>
+                    <input type="text" id="input-monto-meta" inputmode="numeric" pattern="[0-9]*" placeholder="Ej: 500000" required>
+                    <button type="submit" class="btn-meta-fijar">Fijar Meta</button>
+                </form>
+
+                <h4 id="txt-meta-nombre">Ahorrar para mi viaje</h4>
+                <p class="monto-destacado-premium" id="txt-meta-monto">$0</p>
+                
+                <section class="progreso-wrapper-clean">
+                    <progress id="barra-progreso-nativa" value="0" max="100"></progress>
+                    <span id="txt-meta-porcentaje">0% completado</span>
+                </section>
+            </article>
+            
+            <footer class="meta-premium-footer">
+                <p>Llevás guardado: <span id="txt-meta-ahorrado">$0</span></p>
+                <p class="texto-secundario">Faltan: <span id="txt-meta-restante">$0</span></p>
+                <button type="button" class="btn-meta-accion" id="btn-ver-metas">Ver metas</button>
+            </footer>
+        </section>
+
+        <section class="panel-control-tema" aria-label="Selector de tema visual">
+            <label for="input-switch-tema" class="label-tema">
+                <span id="icono-estado-tema">🌙</span> Modo oscuro
+            </label>
+            <input type="checkbox" id="input-switch-tema">
+        </section>
     </aside>
 
-    <!-- MAIN -->
-    <main>
+    <section class="dashboard-main">
         <header>
             <h1>Dashboard</h1>
         </header>
 
-        <!-- Resumen (sin lógica todavía) -->
-        <section>
+        <section class="panel-resumen">
             <h2>Resumen</h2>
-            <p>Ingresos: $0</p>
-            <p>Gastos: $0</p>
-            <p>Saldo: $0</p>
+            <p>Ingresos: <span id="resumen-ingresos">$0</span></p>
+            <p>Gastos: <span id="resumen-gastos">$0</span></p>
+            <p>Saldo: <span id="resumen-saldo">$0</span></p>
         </section>
 
         <hr>
 
-        <!-- 🔥 LO IMPORTANTE: DOS COLUMNAS -->
         <section class="contenedor-movimientos">
 
             <section class="panel panel-grafico" aria-labelledby="grafico-titulo">
-    <h2 id="grafico-titulo">Gastos por categoría</h2>
-    
-    <figure class="wrapper-dona-grafica">
-        <figcaption class="centro-vacio-dona">
-            <small class="text-muted">Total Gastos</small>
-            <strong id="monto-total-grafico">$0</strong>
-        </figcaption>
-    </figure>
+                <h2 id="grafico-titulo">Gastos por categoría</h2>
+                
+                <figure class="wrapper-dona-grafica">
+                    <figcaption class="centro-vacio-dona">
+                        <small class="text-muted">Total Gastos</small>
+                        <strong id="monto-total-grafico">$0</strong>
+                    </figcaption>
+                </figure>
 
-    <ul id="leyenda-dinamica-gastos" class="lista-leyenda-clean">
-        </ul>
-</section>
+                <ul id="leyenda-dinamica-gastos" class="lista-leyenda-clean">
+                    </ul>
+            </section>
 
-            <!-- IZQUIERDA -->
             <section class="panel">
                 <h2>Agregar movimiento</h2>
-
-                <form onsubmit="agregarMovimiento(); return false;">
-                    
-                    <label>Tipo:</label>
+                <form id="form-movimiento">
+                    <label for="tipo">Tipo:</label>
                     <select id="tipo">
                         <option value="Ingreso">Ingreso</option>
                         <option value="Gasto">Gasto</option>
                     </select>
 
-                    <label>Monto:</label>
-                    <input type="number" id="monto" placeholder="Monto">
+                    <label for="monto">Monto:</label>
+                    <input type="text" id="monto" inputmode="numeric" pattern="[0-9]*" placeholder="Monto" required>
 
                     <button type="submit">Agregar</button>
                 </form>
             </section>
 
-            <!-- DERECHA -->
             <section class="panel">
                 <h2>Movimientos recientes</h2>
-                <div id="listaMovimientos"></div>
+                <ul id="listaMovimientos" class="lista-movimientos-clean"></ul>
             </section>
 
         </section>
-    </main>
-
-</div>
+    </section>
+</main>
 
 <script src="main.js"></script>
 </body>
