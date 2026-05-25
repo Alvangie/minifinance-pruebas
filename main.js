@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     inicializarSistemaTemas();
     configurarValidacionInputs();
     
-    // Escuchar el formulario de movimientos
     const formMovimiento = document.getElementById('form-movimiento');
     if (formMovimiento) {
         formMovimiento.addEventListener('submit', (e) => {
@@ -27,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Escuchar tu nuevo formulario para fijar la meta
     const formMeta = document.getElementById('form-configurar-meta');
     if (formMeta) {
         formMeta.addEventListener('submit', (e) => {
@@ -44,22 +42,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Primera renderización con los datos que hayan quedado guardados
     actualizarTodaLaInterfaz();
 });
 
-// ─── VALIDACIÓN DE ENTRADAS (DOM FEEDBACK) ──────────────────────────────
 function configurarValidacionInputs() {
     const inputsNumericos = document.querySelectorAll('input[inputmode="numeric"]');
     inputsNumericos.forEach(input => {
-        // Bloquear letras, signos de exponente y números negativos en tiempo real
         input.addEventListener('input', (e) => {
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
         });
     });
 }
 
-// ─── CONTROLADOR DE MOVIMIENTOS CON CATEGORÍA REAL ──────────────────────
 function agregarMovimiento() {
     const inputMonto = document.getElementById("monto");
     const selectTipo = document.getElementById("tipo");
@@ -67,13 +61,10 @@ function agregarMovimiento() {
     
     const monto = parseFloat(inputMonto.value);
     const tipo = selectTipo.value;
-    
-    // Si es gasto, lee el select manual que pusiste. Si es ingreso, no lleva.
     const categoria = tipo === "Gasto" ? selectCategoria.value : "Otros";
 
     if (isNaN(monto) || monto <= 0) return;
 
-    // Guardamos la propiedad explícita elegida por el usuario en el Storage
     appState.movimientos.push({ tipo, monto, categoria });
     localStorage.setItem('minifinance_movimientos', JSON.stringify(appState.movimientos));
 
@@ -81,7 +72,7 @@ function agregarMovimiento() {
     actualizarTodaLaInterfaz();
 }
 
-// ─── ORQUESTADOR: RECORRE Y AGRUPA POR TU CATEGORÍA REAL ────────────────
+// ─── UNA SOLA FUNCIÓN CONTROLADORA REAL (SIN DUPLICADOS) ────────────────
 function actualizarTodaLaInterfaz() {
     let ingresos = 0;
     let gastos = 0;
@@ -95,26 +86,21 @@ function actualizarTodaLaInterfaz() {
             ingresos += m.monto;
         } else {
             gastos += m.monto;
-            
-            // LEER LA CATEGORÍA REAL GUARDADA (YA NO SE INVENTA POR MONTO)
             const catReal = m.categoria || "Otros";
             acumuladoCategorias[catReal] = (acumuladoCategorias[catReal] || 0) + m.monto;
         }
 
-        // Renderizar en el historial semántico (li)
         if (listaUI) {
             const li = document.createElement('li');
+            li.className = "break-monto";
             li.style.padding = '8px';
             li.style.borderBottom = '1px solid var(--border-color)';
-            
-            // Si es gasto, mostramos al lado qué categoría elegiste manualmente
-            const detalleText = m.tipo === "Gasto" ? `${m.tipo} (${m.categoria})` : m.tipo;
-            li.innerHTML = `<strong>${detalleText}</strong> — $${m.monto.toLocaleString('es-AR')}`;
+            const infoTexto = m.tipo === "Gasto" ? `${m.tipo} (${m.categoria})` : m.tipo;
+            li.innerHTML = `<strong>${infoTexto}</strong> — $${m.monto.toLocaleString('es-AR')}`;
             listaUI.appendChild(li);
         }
     });
 
-    // Actualizar paneles visuales
     if(document.getElementById('resumen-ingresos')) {
         document.getElementById('resumen-ingresos').textContent = `$${ingresos.toLocaleString('es-AR')}`;
         document.getElementById('resumen-gastos').textContent = `$${gastos.toLocaleString('es-AR')}`;
@@ -125,54 +111,6 @@ function actualizarTodaLaInterfaz() {
     renderizarModuloGrafico(gastos, acumuladoCategorias);
 }
 
-// ─── ORQUESTADOR DE RENDERIZADO VISUAL ──────────────────────────────────
-function actualizarTodaLaInterfaz() {
-    let ingresos = 0;
-    let gastos = 0;
-    const acumuladoCategorias = {};
-    const listaUI = document.getElementById("listaMovimientos");
-    
-    if (listaUI) listaUI.innerHTML = "";
-
-    appState.movimientos.forEach(m => {
-        if (m.tipo === "Ingreso") {
-            ingresos += m.monto;
-        } else {
-            gastos += m.monto;
-            
-            // Simulación semántica de categorías basada en reglas de negocio dinámicas
-            let categoria = 'Otros';
-            if (m.monto >= 50000) categoria = 'Servicios';
-            else if (m.monto >= 15000) categoria = 'Alimentación';
-            else if (m.monto >= 5000) categoria = 'Ocio';
-            else if (m.monto > 0) categoria = 'Transporte';
-
-            acumuladoCategorias[categoria] = (acumuladoCategorias[categoria] || 0) + m.monto;
-        }
-
-        // Renderizar en la lista usando elementos semánticos nativos (li) sin divs
-        if (listaUI) {
-            const li = document.createElement('li');
-            li.style.padding = '8px';
-            li.style.borderBottom = '1px solid var(--border-color)';
-            li.innerHTML = `<strong>${m.tipo}</strong> — $${m.monto.toLocaleString('es-AR')}`;
-            listaUI.appendChild(li);
-        }
-    });
-
-    // Actualizar el bloque de Resumen Financiero
-    if(document.getElementById('resumen-ingresos')) {
-        document.getElementById('resumen-ingresos').textContent = `$${ingresos.toLocaleString('es-AR')}`;
-        document.getElementById('resumen-gastos').textContent = `$${gastos.toLocaleString('es-AR')}`;
-        document.getElementById('resumen-saldo').textContent = `$${(ingresos - gastos).toLocaleString('es-AR')}`;
-    }
-
-    // Disparar tus componentes específicos
-    renderizarModuloMeta(ingresos, gastos);
-    renderizarModuloGrafico(gastos, acumuladoCategorias);
-}
-
-// ─── MÓDULO A: META DE AHORRO DINÁMICA ──────────────────────────────────
 function renderizarModuloMeta(ingresos, gastos) {
     const ahorroReal = ingresos - gastos;
     const objetivo = appState.montoMeta;
@@ -188,7 +126,6 @@ function renderizarModuloMeta(ingresos, gastos) {
     const faltante = objetivo - ahorroReal;
     document.getElementById('txt-meta-restante').textContent = `$${Math.max(0, faltante).toLocaleString('es-AR')}`;
 
-    // DESAFÍO OBLIGATORIO: Alertas por comportamiento financiero en el DOM
     const tarjeta = document.getElementById('tarjeta-meta-ahorro');
     if (tarjeta && objetivo > 0) {
         if (porcentaje >= 100) {
@@ -203,7 +140,6 @@ function renderizarModuloMeta(ingresos, gastos) {
     }
 }
 
-// ─── MÓDULO B: SISTEMA DE TEMAS ─────────────────────────────────────────
 function inicializarSistemaTemas() {
     const switchTema = document.getElementById('input-switch-tema');
     if (!switchTema) return;
@@ -219,7 +155,6 @@ function inicializarSistemaTemas() {
     });
 }
 
-// ─── MÓDULO C: GRÁFICO CÓNICO PREMIUM ───────────────────────────────────
 function renderizarModuloGrafico(totalGastos, categorias) {
     const dona = document.querySelector('.wrapper-dona-grafica');
     const leyenda = document.getElementById('leyenda-dinamica-gastos');
@@ -249,6 +184,7 @@ function renderizarModuloGrafico(totalGastos, categorias) {
         li.style.borderLeft = `4px solid ${color}`;
         li.style.paddingLeft = '10px';
         li.style.marginBottom = '6px';
+        li.className = "break-monto";
         li.innerHTML = `<strong>${cat}</strong>: $${monto.toLocaleString('es-AR')} <small class="text-muted">(${Math.round(porcentaje)}%)</small>`;
         leyenda.appendChild(li);
     }

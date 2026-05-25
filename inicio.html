@@ -9,6 +9,7 @@
 
 <main class="layout">
 
+    <!-- SIDEBAR DE LA APLICACIÓN -->
     <aside class="sidebar">
         <h2>MiniFinance</h2>
 
@@ -21,6 +22,7 @@
 
         <hr>
 
+        <!-- MÓDULO A: META DE AHORRO CONFIGURABLE -->
         <section class="panel-meta-premium" id="tarjeta-meta-ahorro" aria-labelledby="meta-titulo">
             <header class="meta-premium-header">
                 <span class="meta-icono" aria-hidden="true">🎯</span>
@@ -44,12 +46,13 @@
             </article>
             
             <footer class="meta-premium-footer">
-                <p>Llevás guardado: <span id="txt-meta-ahorrado">$0</span></p>
-                <p class="texto-secundario">Faltan: <span id="txt-meta-restante">$0</span></p>
+                <p>Llevás guardado: <span id="txt-meta-ahorrado" class="break-monto">$0</span></p>
+                <p class="texto-secundario">Faltan: <span id="txt-meta-restante" class="break-monto">$0</span></p>
                 <button type="button" class="btn-meta-accion" id="btn-ver-metas">Ver metas</button>
             </footer>
         </section>
 
+        <!-- MÓDULO B: CONTROLADOR DE TEMA VISUAL -->
         <section class="panel-control-tema" aria-label="Selector de tema visual">
             <label for="input-switch-tema" class="label-tema">
                 <span id="icono-estado-tema">🌙</span> Modo oscuro
@@ -58,6 +61,7 @@
         </section>
     </aside>
 
+    <!-- PANEL PRINCIPAL DEL DASHBOARD -->
     <section class="dashboard-main">
         <header>
             <h1>Dashboard</h1>
@@ -65,30 +69,30 @@
 
         <section class="panel-resumen">
             <h2>Resumen</h2>
-            <p>Ingresos: <span id="resumen-ingresos">$0</span></p>
-            <p>Gastos: <span id="resumen-gastos">$0</span></p>
-            <p>Saldo: <span id="resumen-saldo">$0</span></p>
+            <p>Ingresos: <span id="resumen-ingresos" class="break-monto">$0</span></p>
+            <p>Gastos: <span id="resumen-gastos" class="break-monto">$0</span></p>
+            <p>Saldo: <span id="resumen-saldo" class="break-monto">$0</span></p>
         </section>
 
         <hr>
 
         <section class="contenedor-movimientos">
 
+            <!-- MÓDULO C: GRÁFICO DE GASTOS -->
             <section class="panel panel-grafico" aria-labelledby="grafico-titulo">
                 <h2 id="grafico-titulo">Gastos por categoría</h2>
                 
                 <figure class="wrapper-dona-grafica">
                     <figcaption class="centro-vacio-dona">
                         <small class="text-muted">Total Gastos</small>
-                        <strong id="monto-total-grafico">$0</strong>
+                        <strong id="monto-total-grafico" class="break-monto">$0</strong>
                     </figcaption>
                 </figure>
 
-                <ul id="leyenda-dinamica-gastos" class="lista-leyenda-clean">
-                    </ul>
+                <ul id="leyenda-dinamica-gastos" class="lista-leyenda-clean"></ul>
             </section>
 
-           <!-- FORMULARIO CON SECTOR DE CATEGORÍAS MANUAL -->
+            <!-- FORMULARIO CORREGIDO (SIN CÓDIGO SUELTO ABAJO) -->
             <section class="panel">
                 <h2>Agregar movimiento</h2>
                 <form id="form-movimiento">
@@ -98,7 +102,6 @@
                         <option value="Gasto">Gasto</option>
                     </select>
 
-                    <!-- 🔥 TU NUEVO SELECTOR MANUAL PREMIUM -->
                     <label for="categoria">Categoría (Solo para Gastos):</label>
                     <select id="categoria">
                         <option value="Alimentación">Alimentación</option>
@@ -115,22 +118,7 @@
                 </form>
             </section>
 
-    <label for="categoria">Categoría (Solo para Gastos):</label>
-    <select id="categoria">
-        <option value="Alimentación">Alimentación</option>
-        <option value="Ocio">Ocio</option>
-        <option value="Transporte">Transporte</option>
-        <option value="Servicios">Servicios</option>
-        <option value="Otros">Otros</option>
-    </select>
-
-    <label for="monto">Monto:</label>
-    <input type="text" id="monto" inputmode="numeric" pattern="[0-9]*" placeholder="Monto" required>
-
-    <button type="submit">Agregar</button>
-</form>
-            </section>
-
+            <!-- LISTA DE MOVIMIENTOS RECIENTES -->
             <section class="panel">
                 <h2>Movimientos recientes</h2>
                 <ul id="listaMovimientos" class="lista-movimientos-clean"></ul>
