@@ -59,23 +59,66 @@ function configurarValidacionInputs() {
     });
 }
 
-// ─── CONTROLADOR DE MOVIMIENTOS REFACTORIZADO ───────────────────────────
+// ─── CONTROLADOR DE MOVIMIENTOS CON CATEGORÍA REAL ──────────────────────
 function agregarMovimiento() {
     const inputMonto = document.getElementById("monto");
     const selectTipo = document.getElementById("tipo");
+    const selectCategoria = document.getElementById("categoria");
     
     const monto = parseFloat(inputMonto.value);
-    const tipo = selectTipo.value; // "Ingreso" o "Gasto"
+    const tipo = selectTipo.value;
+    // Si es ingreso, no lleva categoría de gasto, por estándar le ponemos 'Ingreso'
+    const categoria = tipo === "Gasto" ? selectCategoria.value : "Otros";
 
     if (isNaN(monto) || monto <= 0) return;
 
-    // Guardar el movimiento estructurado en el estado global
-    appState.movimientos.push({ tipo, monto });
+    // Guardamos la propiedad de forma explícita en el objeto
+    appState.movimientos.push({ tipo, monto, categoria });
     localStorage.setItem('minifinance_movimientos', JSON.stringify(appState.movimientos));
 
-    // Limpiar input y disparar recálculos en cadena de todos tus módulos
     inputMonto.value = "";
     actualizarTodaLaInterfaz();
+}
+
+// ─── REFACTORIZACIÓN DEL ORQUESTADOR PARA LEER LA CATEGORÍA REAL ────────
+function actualizarTodaLaInterfaz() {
+    let ingresos = 0;
+    let gastos = 0;
+    const acumuladoCategorias = {};
+    const listaUI = document.getElementById("listaMovimientos");
+    
+    if (listaUI) listaUI.innerHTML = "";
+
+    appState.movimientos.forEach(m => {
+        if (m.tipo === "Ingreso") {
+            ingresos += m.monto;
+        } else {
+            gastos += m.monto;
+            
+            // Leemos directamente la categoría real guardada por el usuario
+            const catReal = m.categoria || "Otros";
+            acumuladoCategorias[catReal] = (acumuladoCategorias[catReal] || 0) + m.monto;
+        }
+
+        if (listaUI) {
+            const li = document.createElement('li');
+            li.style.padding = '8px';
+            li.style.borderBottom = '1px solid var(--border-color)';
+            // Si es gasto, mostramos su categoría en la lista para mayor jerarquía visual
+            const detalleText = m.tipo === "Gasto" ? `${m.tipo} (${m.categoria})` : m.tipo;
+            li.innerHTML = `<strong>${detalleText}</strong> — $${m.monto.toLocaleString('es-AR')}`;
+            listaUI.appendChild(li);
+        }
+    });
+
+    if(document.getElementById('resumen-ingresos')) {
+        document.getElementById('resumen-ingresos').textContent = `$${ingresos.toLocaleString('es-AR')}`;
+        document.getElementById('resumen-gastos').textContent = `$${gastos.toLocaleString('es-AR')}`;
+        document.getElementById('resumen-saldo').textContent = `$${(ingresos - gastos).toLocaleString('es-AR')}`;
+    }
+
+    renderizarModuloMeta(ingresos, gastos);
+    renderizarModuloGrafico(gastos, acumuladoCategorias);
 }
 
 // ─── ORQUESTADOR DE RENDERIZADO VISUAL ──────────────────────────────────
