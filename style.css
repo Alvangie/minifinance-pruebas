@@ -217,6 +217,30 @@ progress {
     list-style: none;
     padding: 0;
 }
+
+/* ========================================================
+   ✨ EFECTO VISUAL PREMIUM: SELECTOR DE CATEGORÍA DINÁMICO
+   ======================================================== */
+.grupo-formulario-oculto {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    /* Transición suave de tamaño y desvanecimiento */
+    transition: max-height 0.4s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
+    margin-bottom: 0;
+}
+
+/* Clase que se activa dinámicamente con JavaScript */
+.grupo-formulario-oculto.mostrar-categoria {
+    max-height: 100px; /* Espacio suficiente para el select y su etiqueta */
+    opacity: 1;
+    margin-bottom: 10px;
+}
+
+
 /* ========================================================
    📱 MEDIA QUERY OBLIGATORIA: RESPONSIVE DESIGN (CELULARES)
    ======================================================== */
