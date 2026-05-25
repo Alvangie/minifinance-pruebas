@@ -120,7 +120,9 @@ progress {
     border-radius: 6px;
 }
 
-/* VARIABLES DE ARQUITECTURA DE TEMAS DINÁMICOS */
+/* ========================================================
+   🎨 ARQUITECTURA DE VARIABLES Y TEMAS DINÁMICOS
+   ======================================================== */
 :root, [data-theme="dark"] {
     --bg-primary: #0c1220;
     --bg-card: #0f1c2e;
@@ -131,6 +133,7 @@ progress {
     --color-exito: #10b981;
     --color-alerta: #f77f00;
 }
+
 [data-theme="light"] {
     --bg-primary: #f8fafc;
     --bg-card: #ffffff;
@@ -141,10 +144,156 @@ progress {
     --color-exito: #10b981;
     --color-alerta: #ef4444;
 }
-body { background: var(--bg-primary) !important; color: var(--text-main) !important; }
-.sidebar { background: var(--bg-sidebar) !important; }
-.panel, .panel-resumen { background: var(--bg-card) !important; border: 1px solid var(--border-color); }
 
+/* ========================================================
+   ESTILOS GENERALES CON TRANSICIÓN FLUIDA REPARADA
+   ======================================================== */
+body {
+    background: var(--bg-primary);
+    color: var(--text-main);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    /* 🔥 Transición suave para todo el cuerpo */
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+    padding: 20px;
+    background: var(--bg-sidebar);
+    /* 🔥 Transición suave para la barra lateral */
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.dashboard-main {
+    flex: 1;
+    padding: 20px;
+}
+
+.contenedor-movimientos {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* PANELES ESTILO APLICACIÓN MÓVIL */
+.panel {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    border-radius: 10px;
+    min-width: 0; 
+    /* 🔥 Transición suave para las tarjetas contenedoras */
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.panel-resumen {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    border-radius: 10px;
+    /* 🔥 Transición suave para la zona de balances */
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+/* CONTROL DE DESBORDE DE NÚMEROS GIGANTES */
+.break-monto {
+    word-break: break-all;
+    overflow-wrap: break-word;
+}
+
+/* FORMULARIOS SEMÁNTICOS LIMPIOS */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+form label {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+form select, form input {
+    background: var(--bg-primary);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+form button {
+    background: var(--color-exito);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: background 0.3s ease;
+}
+
+/* TARJETA DE METAS PREMIUM */
+.panel-meta-premium {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 15px;
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.meta-premium-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.meta-premium-header h3 {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.monto-destacado-premium {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 8px 0;
+}
+
+progress {
+    width: 100%;
+    height: 8px;
+    accent-color: var(--color-exito);
+    display: block;
+}
+
+.meta-premium-footer {
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.btn-meta-accion {
+    width: 100%;
+    background: var(--bg-primary);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* SWITCH DEL COMPONENTE DE TEMAS */
 .panel-control-tema {
     margin-top: 15px;
     padding: 8px;
@@ -154,10 +303,16 @@ body { background: var(--bg-primary) !important; color: var(--text-main) !import
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-/* GRÁFICO DE DONA NATIVO */
+.label-tema {
+    font-size: 14px;
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+/* COMPONENTE GRÁFICO DE DONA CÓNICA */
 .wrapper-dona-grafica {
     width: 140px;
     height: 140px;
@@ -167,6 +322,7 @@ body { background: var(--bg-primary) !important; color: var(--text-main) !import
     justify-content: center;
     align-items: center;
 }
+
 .centro-vacio-dona {
     width: 100px;
     height: 100px;
@@ -178,6 +334,7 @@ body { background: var(--bg-primary) !important; color: var(--text-main) !import
     align-items: center;
     transition: background 0.3s ease;
 }
+
 .lista-leyenda-clean {
     list-style: none;
     padding: 0;
