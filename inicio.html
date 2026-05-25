@@ -88,14 +88,32 @@
                     </ul>
             </section>
 
+           <!-- FORMULARIO CON SECTOR DE CATEGORÍAS MANUAL -->
             <section class="panel">
                 <h2>Agregar movimiento</h2>
                 <form id="form-movimiento">
-    <label for="tipo">Tipo:</label>
-    <select id="tipo">
-        <option value="Ingreso">Ingreso</option>
-        <option value="Gasto">Gasto</option>
-    </select>
+                    <label for="tipo">Tipo:</label>
+                    <select id="tipo">
+                        <option value="Ingreso">Ingreso</option>
+                        <option value="Gasto">Gasto</option>
+                    </select>
+
+                    <!-- 🔥 TU NUEVO SELECTOR MANUAL PREMIUM -->
+                    <label for="categoria">Categoría (Solo para Gastos):</label>
+                    <select id="categoria">
+                        <option value="Alimentación">Alimentación</option>
+                        <option value="Ocio">Ocio</option>
+                        <option value="Transporte">Transporte</option>
+                        <option value="Servicios">Servicios</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+
+                    <label for="monto">Monto:</label>
+                    <input type="text" id="monto" inputmode="numeric" pattern="[0-9]*" placeholder="Monto" required>
+
+                    <button type="submit">Agregar</button>
+                </form>
+            </section>
 
     <label for="categoria">Categoría (Solo para Gastos):</label>
     <select id="categoria">

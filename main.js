@@ -67,12 +67,13 @@ function agregarMovimiento() {
     
     const monto = parseFloat(inputMonto.value);
     const tipo = selectTipo.value;
-    // Si es ingreso, no lleva categoría de gasto, por estándar le ponemos 'Ingreso'
+    
+    // Si es gasto, lee el select manual que pusiste. Si es ingreso, no lleva.
     const categoria = tipo === "Gasto" ? selectCategoria.value : "Otros";
 
     if (isNaN(monto) || monto <= 0) return;
 
-    // Guardamos la propiedad de forma explícita en el objeto
+    // Guardamos la propiedad explícita elegida por el usuario en el Storage
     appState.movimientos.push({ tipo, monto, categoria });
     localStorage.setItem('minifinance_movimientos', JSON.stringify(appState.movimientos));
 
@@ -80,7 +81,7 @@ function agregarMovimiento() {
     actualizarTodaLaInterfaz();
 }
 
-// ─── REFACTORIZACIÓN DEL ORQUESTADOR PARA LEER LA CATEGORÍA REAL ────────
+// ─── ORQUESTADOR: RECORRE Y AGRUPA POR TU CATEGORÍA REAL ────────────────
 function actualizarTodaLaInterfaz() {
     let ingresos = 0;
     let gastos = 0;
@@ -95,22 +96,25 @@ function actualizarTodaLaInterfaz() {
         } else {
             gastos += m.monto;
             
-            // Leemos directamente la categoría real guardada por el usuario
+            // LEER LA CATEGORÍA REAL GUARDADA (YA NO SE INVENTA POR MONTO)
             const catReal = m.categoria || "Otros";
             acumuladoCategorias[catReal] = (acumuladoCategorias[catReal] || 0) + m.monto;
         }
 
+        // Renderizar en el historial semántico (li)
         if (listaUI) {
             const li = document.createElement('li');
             li.style.padding = '8px';
             li.style.borderBottom = '1px solid var(--border-color)';
-            // Si es gasto, mostramos su categoría en la lista para mayor jerarquía visual
+            
+            // Si es gasto, mostramos al lado qué categoría elegiste manualmente
             const detalleText = m.tipo === "Gasto" ? `${m.tipo} (${m.categoria})` : m.tipo;
             li.innerHTML = `<strong>${detalleText}</strong> — $${m.monto.toLocaleString('es-AR')}`;
             listaUI.appendChild(li);
         }
     });
 
+    // Actualizar paneles visuales
     if(document.getElementById('resumen-ingresos')) {
         document.getElementById('resumen-ingresos').textContent = `$${ingresos.toLocaleString('es-AR')}`;
         document.getElementById('resumen-gastos').textContent = `$${gastos.toLocaleString('es-AR')}`;
