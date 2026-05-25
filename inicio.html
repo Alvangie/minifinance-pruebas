@@ -22,12 +22,29 @@
 
         <hr>
 
-        <section>
-            <h3>Meta</h3>
-            <input type="number" placeholder="Meta">
-            <button>Guardar</button>
-            <p>$0</p>
+<section class="panel-meta-premium" id="tarjeta-meta-ahorro" aria-labelledby="meta-titulo">
+    <header class="meta-premium-header">
+        <span class="meta-icono" aria-hidden="true">🎯</span>
+        <h3 id="meta-titulo">Meta de ahorro</h3>
+    </header>
+    
+    <article class="meta-premium-body">
+        <h4 id="txt-meta-nombre">Ahorrar para mi viaje</h4>
+        <p class="monto-destacado-premium" id="txt-meta-monto">$500.000</p>
+        
+        <section class="progreso-wrapper-clean">
+            <progress id="barra-progreso-nativa" value="0" max="100"></progress>
+            <span id="txt-meta-porcentaje">0% completado</span>
         </section>
+    </article>
+    
+    <footer class="meta-premium-footer">
+        <p>Llevás guardado: <span id="txt-meta-ahorrado">$0</span></p>
+        <p class="texto-secundario">Faltan: <span id="txt-meta-restante">$0</span></p>
+        <button type="button" class="btn-meta-accion" id="btn-ver-metas">Ver metas</button>
+    </footer>
+</section>
+
     </aside>
 
     <!-- MAIN -->
