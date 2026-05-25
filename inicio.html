@@ -105,14 +105,16 @@
                         <option value="Gasto">Gasto</option>
                     </select>
 
-                    <label for="categoria">Categoría (Solo para Gastos):</label>
-                    <select id="categoria">
-                        <option value="Alimentación">Alimentación</option>
-                        <option value="Ocio">Ocio</option>
-                        <option value="Transporte">Transporte</option>
-                        <option value="Servicios">Servicios</option>
-                        <option value="Otros">Otros</option>
-                    </select>
+                    <section id="contenedor-categoria-dinamica" class="grupo-formulario-oculto">
+                        <label for="categoria">Categoría del Gasto:</label>
+                        <select id="categoria">
+                            <option value="Alimentación">Alimentación</option>
+                            <option value="Ocio">Ocio</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Servicios">Servicios</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </section>
 
                     <label for="monto">Monto:</label>
                     <input type="text" id="monto" inputmode="numeric" pattern="[0-9]*" placeholder="Monto" required>
@@ -120,6 +122,7 @@
                     <button type="submit">Agregar</button>
                 </form>
             </section>
+
 
             <!-- LISTA DE MOVIMIENTOS RECIENTES -->
             <section class="panel">
