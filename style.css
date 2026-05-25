@@ -221,32 +221,19 @@ progress {
    📱 MEDIA QUERY OBLIGATORIA: RESPONSIVE DESIGN (CELULARES)
    ======================================================== */
 @media (max-width: 768px) {
-    /* 1. Hacemos que el diseño general pase de fila a columna */
     .layout {
         flex-direction: column;
     }
-
-    /* 2. Hacemos que la barra lateral osidebar ocupe el ancho completo arriba */
     .sidebar {
         width: 100%;
         box-sizing: border-box;
-        border-bottom: 1px solid var(--border-color);
     }
-
-    /* 3. ¡EL TRUCO CLAVE! Cambiamos las 3 columnas a una sola columna vertical */
     .contenedor-movimientos {
         flex-direction: column;
         gap: 15px;
     }
-
-    /* 4. Forzamos a que cada tarjeta use el 100% del espacio disponible sin apretarse */
     .panel {
         width: 100%;
         box-sizing: border-box;
-    }
-    
-    /* 5. Ajustamos tamaños para mejorar la legibilidad en pantallas táctiles */
-    .monto-destacado-premium {
-        font-size: 24px;
     }
 }
