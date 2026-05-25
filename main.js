@@ -19,16 +19,32 @@ document.addEventListener('DOMContentLoaded', () => {
     inicializarSistemaTemas();
     configurarValidacionInputs();
     
-    // ESCUCHAR FORMULARIO DE MOVIMIENTOS
-    const formMovimiento = document.getElementById('form-movimiento');
-    if (formMovimiento) {
-        formMovimiento.addEventListener('submit', (e) => {
-            e.preventDefault(); // Detiene la recarga molesta del navegador
-            agregarMovimiento();
+    const selectTipo = document.getElementById('tipo');
+    const contenedorCategoria = document.getElementById('contenedor-categoria-dinamica');
+
+    // 🔥 CONTROL EN TIEMPO REAL: Ocultar o mostrar la categoría según el Tipo elegido
+    if (selectTipo && contenedorCategoria) {
+        selectTipo.addEventListener('change', (e) => {
+            if (e.target.value === 'Gasto') {
+                contenedorCategoria.classList.add('mostrar-categoria');
+            } else {
+                contenedorCategoria.classList.remove('mostrar-categoria');
+            }
         });
     }
 
-    // ESCUCHAR FORMULARIO DE METAS
+    // Escuchar el formulario de movimientos
+    const formMovimiento = document.getElementById('form-movimiento');
+    if (formMovimiento) {
+        formMovimiento.addEventListener('submit', (e) => {
+            e.preventDefault(); 
+            agregarMovimiento();
+            // Resetear el contenedor al estado oculto por defecto después de agregar
+            if (contenedorCategoria) contenedorCategoria.classList.remove('mostrar-categoria');
+        });
+    }
+
+    // Escuchar el formulario para fijar el objetivo de ahorro
     const formMeta = document.getElementById('form-configurar-meta');
     if (formMeta) {
         formMeta.addEventListener('submit', (e) => {
