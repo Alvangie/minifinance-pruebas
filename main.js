@@ -66,3 +66,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// ========================================================
+// 🛠️ MÓDULO B: SISTEMA DE TEMAS DINÁMICOS CON LOCALSTORAGE
+// ========================================================
+function inicializarSistemaTemas() {
+    const switchTema = document.getElementById('input-switch-tema');
+    if (!switchTema) return;
+
+    // Recuperar preferencia guardada o aplicar oscuro por defecto (según diseño de las chicas)
+    const temaGuardado = localStorage.getItem('minifinance-tema') || 'dark';
+    document.documentElement.setAttribute('data-theme', temaGuardado);
+    switchTema.checked = temaGuardado === 'dark';
+    actualizarIndicadorVisualTema(temaGuardado);
+
+    switchTema.addEventListener('change', (e) => {
+        const nuevoTema = e.target.checked ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', nuevoTema);
+        localStorage.setItem('minifinance-tema', nuevoTema); // Guardado obligatorio en storage
+        actualizarIndicadorVisualTema(nuevoTema);
+    });
+}
+
+function actualizarIndicadorVisualTema(tema) {
+    const icono = document.getElementById('icono-estado-tema');
+    if (icono) {
+        icono.textContent = tema === 'dark' ? '☀️' : '🌙';
+    }
+}
+
+// Arrancar el tema inmediatamente al procesar el script para evitar parpadeos
+inicializarSistemaTemas();

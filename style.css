@@ -79,3 +79,56 @@ progress {
     cursor: pointer;
     margin-top: 10px;
 }
+
+/* ARQUITECTURA DE TEMAS COMPLETA (SIN REPETIR SELECTORES) */
+:root, [data-theme="dark"] {
+    --bg-primary: #0c1220;
+    --bg-card: #0f1c2e;
+    --bg-sidebar: #111111;
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --border-color: #1e293b;
+    --color-exito: #10b981;
+    --color-alerta: #f77f00;
+}
+
+[data-theme="light"] {
+    --bg-primary: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-sidebar: #f1f5f9;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --color-exito: #10b981;
+    --color-alerta: #ef4444;
+}
+
+/* Aplicación semántica de las variables en los estilos de tus compañeras */
+body {
+    background: var(--bg-primary) !important;
+    color: var(--text-main) !important;
+}
+.sidebar {
+    background: var(--bg-sidebar) !important;
+}
+.panel {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color);
+}
+
+/* Diseño del switch de tema */
+.panel-control-tema {
+    margin-top: 15px;
+    padding: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.label-tema {
+    font-size: 14px;
+    color: var(--text-main);
+    cursor: pointer;
+}
