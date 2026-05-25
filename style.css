@@ -132,3 +132,34 @@ body {
     color: var(--text-main);
     cursor: pointer;
 }
+
+/* ESTILOS DEL GRÁFICO DE DONA */
+.wrapper-dona-grafica {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    margin: 15px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s ease;
+}
+.centro-vacio-dona {
+    width: 115px;
+    height: 115px;
+    background: var(--bg-card);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.lista-leyenda-clean {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 14px;
+}

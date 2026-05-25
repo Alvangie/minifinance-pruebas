@@ -69,7 +69,21 @@
         <hr>
 
         <!-- 🔥 LO IMPORTANTE: DOS COLUMNAS -->
-        <div class="contenedor-movimientos">
+        <section class="contenedor-movimientos">
+
+            <section class="panel panel-grafico" aria-labelledby="grafico-titulo">
+    <h2 id="grafico-titulo">Gastos por categoría</h2>
+    
+    <figure class="wrapper-dona-grafica">
+        <figcaption class="centro-vacio-dona">
+            <small class="text-muted">Total Gastos</small>
+            <strong id="monto-total-grafico">$0</strong>
+        </figcaption>
+    </figure>
+
+    <ul id="leyenda-dinamica-gastos" class="lista-leyenda-clean">
+        </ul>
+</section>
 
             <!-- IZQUIERDA -->
             <section class="panel">
@@ -96,7 +110,7 @@
                 <div id="listaMovimientos"></div>
             </section>
 
-        </div>
+        </section>
     </main>
 
 </div>

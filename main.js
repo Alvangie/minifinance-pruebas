@@ -97,3 +97,90 @@ function actualizarIndicadorVisualTema(tema) {
 
 // Arrancar el tema inmediatamente al procesar el script para evitar parpadeos
 inicializarSistemaTemas();
+
+// ========================================================
+// 🛠️ MÓDULO C: GRÁFICO DE GASTOS DINÁMICO (CONIC-GRADIENT)
+// ========================================================
+const MAPA_COLORES = {
+    'Alimentación': '#ff4d6d',
+    'Ocio': '#7209b7',
+    'Transporte': '#f77f00',
+    'Servicios': '#4361ee',
+    'Otros': '#2ec4b6'
+};
+
+function calcularYRenderizarGrafico() {
+    const movimientos = document.querySelectorAll('#listaMovimientos p');
+    const leyenda = document.getElementById('leyenda-dinamica-gastos');
+    const dona = document.querySelector('.wrapper-dona-grafica');
+    
+    if (!leyenda || !dona) return;
+
+    let totalGastos = 0;
+    const acumuladoCategorias = {};
+
+    // 1. Recorrer movimientos del DOM y acumular únicamente los Gastos
+    movimientos.forEach(p => {
+        const texto = p.textContent;
+        const desglosado = texto.split(' - $');
+        const tipo = desglosado[0].trim().toLowerCase();
+        const monto = parseFloat(desglosado[1]);
+
+        if (!isNaN(monto) && tipo === 'gasto') {
+            totalGastos += monto;
+
+            // Clasificación automatizada basada en texto para acoplarse al prototipo
+            let categoria = 'Otros';
+            if (texto.toLowerCase().includes('super') || texto.toLowerCase().includes('comida')) categoria = 'Alimentación';
+            if (texto.toLowerCase().includes('juego') || texto.toLowerCase().includes('ocio') || texto.toLowerCase().includes('video')) categoria = 'Ocio';
+            if (texto.toLowerCase().includes('transporte') || texto.toLowerCase().includes('bondi') || texto.toLowerCase().includes('viaje')) categoria = 'Transporte';
+            if (texto.toLowerCase().includes('luz') || texto.toLowerCase().includes('agua') || texto.toLowerCase().includes('servicios')) categoria = 'Servicios';
+
+            acumuladoCategorias[categoria] = (acumuladoCategorias[categoria] || 0) + monto;
+        }
+    });
+
+    document.getElementById('monto-total-grafico').textContent = `$${totalGastos.toLocaleString('es-AR')}`;
+    leyenda.innerHTML = '';
+
+    if (totalGastos === 0) {
+        dona.style.background = 'conic-gradient(var(--border-color) 0% 100%)';
+        leyenda.innerHTML = '<li class="text-muted">No hay gastos registrados.</li>';
+        return;
+    }
+
+    // 2. Generar los ángulos de color del conic-gradient y rellenar la leyenda semántica
+    let anguloAcumulado = 0;
+    const segmentosDegradado = [];
+
+    for (const [cat, monto] of Object.entries(acumuladoCategorias)) {
+        const color = MAPA_COLORES[cat] || MAPA_COLORES['Otros'];
+        const porcentaje = (monto / totalGastos) * 100;
+        const siguienteAngulo = anguloAcumulado + porcentaje;
+
+        segmentosDegradado.push(`${color} ${anguloAcumulado}% ${siguienteAngulo}%`);
+        anguloAcumulado = siguienteAngulo;
+
+        // Crear item de lista dinámico semántico sin usar divs
+        const li = document.createElement('li');
+        li.style.borderLeft = `4px solid ${color}`;
+        li.style.paddingLeft = '10px';
+        li.style.marginBottom = '6px';
+        li.innerHTML = `<strong>${cat}</strong>: $${monto.toLocaleString('es-AR')} <small class="text-muted">(${Math.round(porcentaje)}%)</small>`;
+        leyenda.appendChild(li);
+    }
+
+    // Aplicar el estilo al elemento del DOM
+    dona.style.background = `conic-gradient(${segmentosDegradado.join(', ')})`;
+}
+
+// Enganchar actualización en tiempo real junto con el módulo A
+document.addEventListener('DOMContentLoaded', () => {
+    calcularYRenderizarGrafico();
+    const formOriginal = document.querySelector('form');
+    if (formOriginal) {
+        formOriginal.addEventListener('submit', () => {
+            setTimeout(calcularYRenderizarGrafico, 20);
+        });
+    }
+});
